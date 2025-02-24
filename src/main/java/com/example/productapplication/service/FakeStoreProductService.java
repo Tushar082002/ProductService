@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class FakeStoreProductService {
     private RestTemplate restTemplate;
@@ -31,6 +34,7 @@ public class FakeStoreProductService {
         return product;
     }
 
+
     private product convertFakeStoreResponseToProduct(FakeStoreResponsedto response) {
         product product = new product();
         category category = new category();
@@ -44,5 +48,41 @@ public class FakeStoreProductService {
         return product;
     }
 
+    //-----------------------------------------------------------------------------------------------------
+
+    public List<product> getAllproducts(){
+        //1. call a fakestore api
+        List<product> products = new ArrayList<>();
+        ResponseEntity<FakeStoreResponsedto[]> response =  restTemplate.getForEntity("https://fakestoreapi.com/products" , FakeStoreResponsedto[].class);
+
+        //get a status code
+        System.out.println("Status Code: " + response.getStatusCode());
+
+        //2. converting into a list
+        for(FakeStoreResponsedto FakeStoredto : response.getBody()){
+            products.add(convertFakeStoreResponseToProduct(FakeStoredto));
+        }
+
+        return products;
+
+    }
+
+    //-----------------------------------------------------------------------------------------------------
+
+    public  product createProduct(String title, String imageURL, String catTitle, String description) {
+        product response = new product();
+        FakeStoreResponsedto requestBody = new FakeStoreResponsedto();
+        requestBody.setCategory(catTitle);
+        requestBody.setDescription(description);
+        requestBody.setTitle(title);
+        requestBody.setImage(imageURL);
+
+        ResponseEntity<FakeStoreResponsedto> fakestoreResponse =  restTemplate.postForEntity("https://fakestoreapi.com/products" , requestBody , FakeStoreResponsedto.class);
+        System.out.println("Status Code: " + fakestoreResponse.getStatusCode());
+        response = convertFakeStoreResponseToProduct(fakestoreResponse.getBody());
+
+
+        return response;
+    }
 
 }
