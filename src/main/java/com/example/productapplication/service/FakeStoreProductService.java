@@ -2,14 +2,14 @@ package com.example.productapplication.service;
 import com.example.productapplication.dto.FakeStoreResponsedto;
 import com.example.productapplication.model.category;
 import com.example.productapplication.model.product;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.RequestEntity.delete;
 
 @Service
 public class FakeStoreProductService {
@@ -85,4 +85,11 @@ public class FakeStoreProductService {
         return response;
     }
 
+
+    public product deleteProductById(Integer id) {
+        product producttodelete = getProductById(id);
+        restTemplate.delete("https://fakestoreapi.com/products/" + id);
+        return producttodelete;
+
+    }
 }
